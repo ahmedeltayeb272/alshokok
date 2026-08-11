@@ -13,7 +13,6 @@
     
     <style>
         :root {
-            /* الألوان الرئيسية - الوضع الفاتح */
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --bg-sidebar: #1e293b;
@@ -22,13 +21,11 @@
             --border-color: #e2e8f0;
 
             --primary: #3b82f6;
-            --primary-hover: #2563eb;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
             --purple: #8b5cf6;
 
-            /* ألوان التمييز */
             --debt-green: #10b981;
             --debt-blue: #3b82f6;
             --debt-yellow: #f59e0b;
@@ -39,206 +36,46 @@
         }
 
         [data-theme="dark"] {
-            /* الألوان الرئيسية - الوضع المظلم */
             --bg-body: #0f172a;
             --bg-card: #1e293b;
             --bg-sidebar: #090d16;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #334155;
-
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
         }
 
         * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            min-height: 100vh;
-        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; min-height: 100vh; }
 
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 80px;
-            background-color: var(--bg-sidebar);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-            position: fixed;
-            height: 100vh;
-            right: 0;
-            top: 0;
-            z-index: 100;
-        }
+        .sidebar { width: 80px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; align-items: center; padding: 20px 0; position: fixed; height: 100vh; right: 0; top: 0; z-index: 100; }
+        .sidebar-brand { color: var(--primary); font-size: 24px; margin-bottom: 30px; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
 
-        .sidebar-brand {
-            color: var(--primary);
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
+        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 20px; width: 50px; height: 50px; border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; position: relative; }
+        .nav-btn:hover, .nav-btn.active { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; }
+        .nav-btn.active::before { content: ''; position: absolute; right: 0; width: 4px; height: 24px; background-color: var(--primary); border-radius: 4px 0 0 4px; }
 
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            align-items: center;
-        }
+        .main-wrapper { margin-right: 80px; flex: 1; padding: 30px; max-width: 1200px; width: calc(100% - 80px); }
+        .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .top-bar h1 { margin: 0; font-size: 24px; font-weight: 700; }
+        .color-legend { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
 
-        .nav-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
+        .theme-toggle, .excel-btn { background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 16px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
 
-        .nav-btn:hover, .nav-btn.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
+        .search-container { position: relative; margin-bottom: 25px; }
+        .search-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-bar { width: 100%; padding: 14px 45px 14px 15px; font-size: 15px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); outline: none; }
 
-        .nav-btn.active::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            width: 4px;
-            height: 24px;
-            background-color: var(--primary);
-            border-radius: 4px 0 0 4px;
-        }
-
-        /* Layout Main */
-        .main-wrapper {
-            margin-right: 80px;
-            flex: 1;
-            padding: 30px;
-            max-width: 1200px;
-            width: calc(100% - 80px);
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .top-bar h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .theme-toggle, .excel-btn {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .excel-btn-success {
-            background-color: var(--success);
-            color: white;
-            border: none;
-        }
-
-        /* Elements */
-        .search-container {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
-        .search-container i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 14px 45px 14px 15px;
-            font-size: 15px;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-main);
-            outline: none;
-        }
-
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: var(--shadow-sm);
-        }
-
+        .btn { padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background-color: var(--primary); color: #fff; }
         .btn-success { background-color: var(--success); color: #fff; }
         .btn-danger { background-color: var(--danger); color: #fff; }
-        .btn-purple { background-color: var(--purple); color: #fff; }
+        .btn-warning { background-color: var(--warning); color: #fff; }
         .btn-secondary { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
 
-        /* Grid & Cards */
-        .customers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-
-        .customer-card {
-            background-color: var(--bg-card);
-            border-radius: 14px;
-            padding: 20px;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.2s;
-        }
-
-        .customer-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .customer-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 6px;
-            height: 100%;
-        }
+        .customers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .customer-card { background-color: var(--bg-card); border-radius: 14px; padding: 20px; cursor: pointer; border: 1px solid var(--border-color); position: relative; overflow: hidden; box-shadow: var(--shadow-sm); }
+        .customer-card::before { content: ''; position: absolute; top: 0; right: 0; width: 6px; height: 100%; }
 
         .card-green::before { background-color: var(--debt-green); }
         .card-blue::before { background-color: var(--debt-blue); }
@@ -248,130 +85,78 @@
         .customer-card h3 { margin: 0 0 10px 0; font-size: 18px; }
         .customer-card .amount { font-size: 20px; font-weight: 700; }
 
-        .card-box {
-            background-color: var(--bg-card);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 25px;
-        }
+        .card-box { background-color: var(--bg-card); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); margin-bottom: 25px; }
 
-        /* Tables Responsive */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            min-width: 500px;
-        }
-
-        th, td {
-            padding: 14px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
-        }
-
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 500px; }
+        th, td { padding: 14px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 14px; }
         th { background-color: rgba(0, 0, 0, 0.02); color: var(--text-muted); }
 
-        .total-banner {
-            background: linear-gradient(135deg, var(--primary), var(--purple));
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-
+        .total-banner { background: linear-gradient(135deg, var(--primary), var(--purple)); color: white; border-radius: 12px; padding: 20px; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            outline: none;
-        }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-main); outline: none; }
 
-        /* Stats Tags */
-        .stats-section {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
+        .stats-section { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .tag { display: inline-block; padding: 6px 12px; border-radius: 8px; margin: 4px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .tag-green { background-color: rgba(16, 185, 129, 0.15); color: var(--debt-green); }
+        .tag-blue { background-color: rgba(59, 130, 246, 0.15); color: var(--debt-blue); }
+        .tag-yellow { background-color: rgba(245, 158, 11, 0.15); color: var(--debt-yellow); }
+        .tag-red { background-color: rgba(239, 68, 68, 0.15); color: var(--debt-red); }
 
-        .tag {
-            display: inline-block;
-            background-color: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 8px;
-            margin: 4px;
-            font-size: 13px;
-            font-weight: 600;
-        }
+        /* Modals & Toast Notification */
+        .modal-backdrop { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: var(--bg-card); padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md); }
+        .modal h3 { margin-top: 0; }
+
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--success); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 2000; animation: fadeInOut 3s forwards; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -20px); } 15% { opacity: 1; transform: translate(-50%, 0); } 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -20px); } }
+
+        .developer-card { display: flex; align-items: center; gap: 20px; background: var(--bg-body); padding: 20px; border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); }
+        .developer-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); display: flex; justify-content: center; align-items: center; color: white; font-size: 32px; overflow: hidden; flex-shrink: 0; }
+        .developer-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .hidden { display: none !important; }
 
-        /* Mobile Fixes */
         @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: 60px;
-                bottom: 0;
-                top: auto;
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 0;
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            }
+            .sidebar { width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; justify-content: space-around; padding: 0; }
             .sidebar-brand { display: none; }
             .sidebar-menu { flex-direction: row; justify-content: space-around; }
             .main-wrapper { margin-right: 0; padding: 15px; width: 100%; margin-bottom: 75px; }
             .nav-btn.active::before { width: 100%; height: 4px; bottom: 0; right: 0; top: auto; border-radius: 4px 4px 0 0; }
             .top-bar { flex-direction: column; align-items: flex-start; }
-            .top-bar > div { width: 100%; flex-wrap: wrap; }
-            .excel-btn, .theme-toggle { flex: 1; justify-content: center; font-size: 13px; }
+            .developer-card { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- الشريط الجانبي -->
+    <!-- القائمة الجانبية -->
     <div class="sidebar">
         <div class="sidebar-brand"><i class="fa-solid fa-store"></i></div>
         <div class="sidebar-menu">
             <button class="nav-btn active" id="btn-main" title="الرئيسية" onclick="showView('main-view', this)"><i class="fa-solid fa-house"></i></button>
             <button class="nav-btn" id="btn-add" title="إضافة زبون" onclick="showView('add-customer-view', this)"><i class="fa-solid fa-user-plus"></i></button>
             <button class="nav-btn" id="btn-stats" title="الإحصائيات" onclick="showStats(this)"><i class="fa-solid fa-chart-pie"></i></button>
+            <button class="nav-btn" id="btn-settings" title="الإعدادات" onclick="showView('settings-view', this)"><i class="fa-solid fa-gear"></i></button>
         </div>
     </div>
 
     <!-- المحتوى الرئيسي -->
     <div class="main-wrapper">
         <div class="top-bar">
-            <h1>دفتر الشكك الإلكتروني</h1>
-            <div style="display: flex; gap: 10px;">
-                <button class="excel-btn excel-btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> تحميل Excel</button>
-                <button class="excel-btn" onclick="document.getElementById('excel-input').click()"><i class="fa-solid fa-file-import"></i> رفع Excel</button>
-                <input type="file" id="excel-input" class="hidden" accept=".xlsx, .xls" onchange="importFromExcel(event)">
+            <div>
+                <h1>دفتر الشكك الإلكتروني</h1>
+                <div class="color-legend">
+                    شرائح الديون: 🟩 حتى 100ج | 🟦 حتى 200ج | 🟨 حتى 400ج | 🟥 فوق 500ج
+                </div>
+            </div>
+            <div>
                 <button class="theme-toggle" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
             </div>
         </div>
 
-        <!-- الرئيسية -->
+        <!-- الصفحة الرئيسية -->
         <div id="main-view">
             <div class="search-container">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -400,7 +185,7 @@
                     <label>البيان / نوع البضاعة:</label>
                     <input type="text" id="cust-initial-type" placeholder="مثال: حساب قديم، بضاعة...">
                 </div>
-                <button class="btn btn-primary" onclick="saveCustomer()"><i class="fa-solid fa-floppy-disk"></i> حفظ الزبون</button>
+                <button class="btn btn-primary" onclick="checkAndSaveCustomer()"><i class="fa-solid fa-floppy-disk"></i> حفظ الزبون</button>
             </div>
         </div>
 
@@ -412,15 +197,17 @@
                         <h2 id="det-cust-name" style="margin:0;"></h2>
                         <p id="det-cust-notes" style="color: var(--text-muted); margin: 5px 0 0 0;"></p>
                     </div>
-                    <div style="display: flex; gap: 8px;">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-warning" onclick="openEditCustomerModal()"><i class="fa-solid fa-pen"></i> تعديل البيانات</button>
+                        <button class="btn btn-purple" onclick="generatePDF()"><i class="fa-solid fa-file-pdf"></i> كشف حساب PDF</button>
                         <button class="btn btn-danger" onclick="deleteCurrentCustomer()"><i class="fa-solid fa-trash"></i> حذف</button>
                         <button class="btn btn-secondary" onclick="showView('main-view', document.getElementById('btn-main'))"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
                     </div>
                 </div>
 
                 <div style="margin: 20px 0; display: flex; gap: 10px;">
-                    <button class="btn btn-success" onclick="addTransactionPrompt('شكك')"><i class="fa-solid fa-plus"></i> إضافة شكك</button>
-                    <button class="btn btn-danger" onclick="addTransactionPrompt('تسديد')"><i class="fa-solid fa-minus"></i> تسديد مبلغ</button>
+                    <button class="btn btn-success" onclick="openTransactionModal('شكك')"><i class="fa-solid fa-plus"></i> إضافة شكك</button>
+                    <button class="btn btn-danger" onclick="openTransactionModal('تسديد')"><i class="fa-solid fa-minus"></i> تسديد مبلغ</button>
                 </div>
 
                 <div class="table-responsive">
@@ -444,38 +231,108 @@
             </div>
         </div>
 
-        <!-- صفحة الإحصائيات (المعادة بالكامل) -->
+        <!-- صفحة الإحصائيات -->
         <div id="stats-view" class="hidden">
             <div id="stats-content"></div>
+        </div>
+
+        <!-- صفحة الإعدادات والمطور -->
+        <div id="settings-view" class="hidden">
+            <div class="card-box">
+                <h2>الإعدادات والنسخ الاحتياطي</h2>
+                <p style="color: var(--text-muted);">إدارة النسخ الاحتياطي لملفات Excel للعمل أوفلاين والاستيراد عند عودة الإنترنت.</p>
+                <div style="display:flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> تصدير البيانات إلى Excel</button>
+                    <button class="btn btn-primary" onclick="document.getElementById('settings-excel-input').click()"><i class="fa-solid fa-file-import"></i> استيراد ملف Excel المحدث</button>
+                    <input type="file" id="settings-excel-input" class="hidden" accept=".xlsx, .xls" onchange="importFromExcel(event)">
+                </div>
+
+                <hr style="border:0; border-top: 1px solid var(--border-color); margin: 30px 0;">
+
+                <h2>حول التطبيق والمطور</h2>
+                <div class="developer-card">
+                    <div class="developer-avatar">
+                        <!-- يمكنك وضع صورتك عن طريق استبدال السطر القادم برابط صورتك <img src="رابط_الصورة.jpg"> -->
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin:0 0 5px 0;">أحمد الطيب الطاهر</h3>
+                        <p style="margin:0; color:var(--text-muted); font-weight: 600;">مطور ومهندس النظام البرمجي</p>
+                        <p style="margin:10px 0 0 0; font-size:14px; color:var(--text-main);">
+                            تم تصميم وتطوير هذا النظام خصيصاً لإدارة عمليات الشكك والمعاملات المالية للسوبرماركت والأنشطة التجارية بدقة عالية وتزامن آمن للبيانات.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة منبثقة لمعاملات الشكك / التسديد -->
+    <div id="transaction-modal" class="modal-backdrop hidden">
+        <div class="modal">
+            <h3 id="modal-trans-title">تسجيل معاملة جديدة</h3>
+            <div class="form-group">
+                <label id="modal-amount-label">المبلغ (جنيه):</label>
+                <input type="number" id="modal-trans-amount" placeholder="مثال: 50" min="1">
+            </div>
+            <div class="form-group">
+                <label id="modal-desc-label">البيان (تفاصيل البضاعة أو التسديد):</label>
+                <input type="text" id="modal-trans-desc" placeholder="خد إيه بالمبلغ دا؟">
+            </div>
+            <div style="display:flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn btn-secondary" onclick="closeModal('transaction-modal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="submitTransaction()">تسجيل المعاملة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة منبثقة لتعديل بيانات الزبون -->
+    <div id="edit-customer-modal" class="modal-backdrop hidden">
+        <div class="modal">
+            <h3>تعديل بيانات الزبون</h3>
+            <div class="form-group">
+                <label>اسم الزبون:</label>
+                <input type="text" id="edit-cust-name">
+            </div>
+            <div class="form-group">
+                <label>الملاحظات / التفاصيل:</label>
+                <textarea id="edit-cust-notes" rows="3"></textarea>
+            </div>
+            <div style="display:flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn btn-secondary" onclick="closeModal('edit-customer-modal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveEditedCustomer()">حفظ التعديلات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة منبثقة لتنبيه تطابق الاسم -->
+    <div id="duplicate-modal" class="modal-backdrop hidden">
+        <div class="modal">
+            <h3 style="color:var(--warning);"><i class="fa-solid fa-triangle-exclamation"></i> تنبيه: الزبون مسجل بالفعل</h3>
+            <p id="duplicate-modal-msg"></p>
+            <div style="display:flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="confirmAddDuplicateCustomer()"><i class="fa-solid fa-user-plus"></i> المتابعة وإضافة زبون جديد بنفس الاسم</button>
+                <button class="btn btn-secondary" onclick="cancelAndGoToExistingCustomer()"><i class="fa-solid fa-arrow-right"></i> إلغاء والذهاب للزبون المسجل بالفعل</button>
+            </div>
         </div>
     </div>
 
     <script>
         let customers = [];
         let currentCustomerId = null;
+        let activeTransactionType = 'شكك';
+        let matchedExistingCustId = null;
 
-        // تحميل البيانات الأولية
-        async function loadInitialData() {
-            const localData = localStorage.getItem('shokok_data_v2');
+        function loadData() {
+            const localData = localStorage.getItem('shokok_app_db');
             if (localData) {
                 customers = JSON.parse(localData);
-                renderCustomers();
-            } else {
-                try {
-                    const res = await fetch('./data.json');
-                    if (res.ok) {
-                        customers = await res.json();
-                        saveLocal();
-                        renderCustomers();
-                    }
-                } catch (err) {
-                    renderCustomers();
-                }
             }
+            renderCustomers();
         }
 
-        function saveLocal() {
-            localStorage.setItem('shokok_data_v2', JSON.stringify(customers));
+        function saveData() {
+            localStorage.setItem('shokok_app_db', JSON.stringify(customers));
         }
 
         function toggleTheme() {
@@ -486,7 +343,7 @@
         }
 
         function showView(viewId, btnElem = null) {
-            ['main-view', 'add-customer-view', 'customer-details-view', 'stats-view'].forEach(id => {
+            ['main-view', 'add-customer-view', 'customer-details-view', 'stats-view', 'settings-view'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(viewId).classList.remove('hidden');
@@ -508,10 +365,17 @@
 
         function renderCustomers() {
             const grid = document.getElementById('customers-container');
-            const query = document.getElementById('search-input').value.toLowerCase();
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
             grid.innerHTML = '';
 
-            const filtered = customers.filter(c => c.name && c.name.toLowerCase().includes(query));
+            let filtered = customers.filter(c => c && c.name && c.name.toLowerCase().includes(query));
+
+            // ترتيب تنازلي حسب إجمالي المديونية (من الأحمر للأخضر)
+            filtered.sort((a, b) => {
+                const totalA = (a.transactions || []).reduce((acc, t) => acc + t.amount, 0);
+                const totalB = (b.transactions || []).reduce((acc, t) => acc + t.amount, 0);
+                return totalB - totalA;
+            });
 
             if (filtered.length === 0) {
                 grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">لا يوجد زبائن مطايقين للبحث</div>`;
@@ -528,18 +392,33 @@
             });
         }
 
-        function saveCustomer() {
-            const name = document.getElementById('cust-name').value;
-            const notes = document.getElementById('cust-notes').value;
-            const amount = parseFloat(document.getElementById('cust-initial-amount').value) || 0;
-            const type = document.getElementById('cust-initial-type').value || 'حساب أول الوقت';
-
+        // إضافة زبون والتحقق من التطابق
+        function checkAndSaveCustomer() {
+            const name = document.getElementById('cust-name').value.trim();
             if (!name) return alert('برجاء إدخال اسم الزبون');
+
+            const existing = customers.find(c => c.name.toLowerCase() === name.toLowerCase());
+            if (existing) {
+                matchedExistingCustId = existing.id;
+                document.getElementById('duplicate-modal-msg').innerText = `هذا الزبون مسجل بالفعل باسم "${existing.name}". هل تود المتابعة وإنشاء زبون جديد أم الانتقال للحساب المسجل؟`;
+                openModal('duplicate-modal');
+                return;
+            }
+
+            createNewCustomer();
+        }
+
+        function createNewCustomer() {
+            const name = document.getElementById('cust-name').value.trim();
+            const notes = document.getElementById('cust-notes').value.trim();
+            const amount = parseFloat(document.getElementById('cust-initial-amount').value) || 0;
+            const type = document.getElementById('cust-initial-type').value.trim() || 'حساب أول الوقت';
 
             const newCust = {
                 id: Date.now(),
                 name: name,
                 notes: notes,
+                createdAt: Date.now(),
                 transactions: amount > 0 ? [{
                     id: Date.now() + 1,
                     amount: amount,
@@ -550,12 +429,25 @@
             };
 
             customers.push(newCust);
-            saveLocal();
+            saveData();
+
             document.getElementById('cust-name').value = '';
             document.getElementById('cust-notes').value = '';
             document.getElementById('cust-initial-amount').value = '0';
             document.getElementById('cust-initial-type').value = '';
+
+            showToast(`تم إضافة الزبون "${name}" بنجاح`);
             showView('main-view', document.getElementById('btn-main'));
+        }
+
+        function confirmAddDuplicateCustomer() {
+            closeModal('duplicate-modal');
+            createNewCustomer();
+        }
+
+        function cancelAndGoToExistingCustomer() {
+            closeModal('duplicate-modal');
+            openCustomerDetails(matchedExistingCustId);
         }
 
         function openCustomerDetails(id) {
@@ -587,109 +479,259 @@
             showView('customer-details-view');
         }
 
-        function addTransactionPrompt(mode) {
-            const amountStr = prompt(mode === 'شكك' ? 'أدخل قيمة الشكك:' : 'أدخل المبلغ المسدد:');
-            if (!amountStr) return;
-            let amount = parseFloat(amountStr);
-            if (isNaN(amount)) return alert('المبلغ غير صحيح');
+        // تعديل بيانات الزبون بدون مس المعاملات
+        function openEditCustomerModal() {
+            const cust = customers.find(c => c.id == currentCustomerId);
+            document.getElementById('edit-cust-name').value = cust.name;
+            document.getElementById('edit-cust-notes').value = cust.notes || '';
+            openModal('edit-customer-modal');
+        }
 
-            if (mode === 'تسديد') amount = -Math.abs(amount);
-            const type = prompt('البيان / الملاحظة:', mode === 'تسديد' ? 'تسديد مبلغ' : 'شكك جديدة');
+        function saveEditedCustomer() {
+            const newName = document.getElementById('edit-cust-name').value.trim();
+            const newNotes = document.getElementById('edit-cust-notes').value.trim();
+            if(!newName) return alert('الاسم مطلوب');
 
             const cust = customers.find(c => c.id == currentCustomerId);
-            cust.transactions.push({
+            cust.name = newName;
+            cust.notes = newNotes;
+            saveData();
+            closeModal('edit-customer-modal');
+            openCustomerDetails(currentCustomerId);
+            showToast('تم تعديل بيانات الزبون بنجاح');
+        }
+
+        // نافذة المعاملات المنبثقة
+        function openTransactionModal(type) {
+            activeTransactionType = type;
+            document.getElementById('modal-trans-amount').value = '';
+            document.getElementById('modal-trans-desc').value = type === 'تسديد' ? 'تسديد مبلغ مستلم من الزبون' : '';
+            
+            document.getElementById('modal-trans-title').innerText = type === 'شكك' ? 'إضافة شكك جديدة' : 'تسديد مبلغ';
+            document.getElementById('modal-desc-label').innerText = type === 'شكك' ? 'نوع البضاعة (خد إيه بالمبلغ؟):' : 'البيان:';
+            
+            openModal('transaction-modal');
+        }
+
+        function submitTransaction() {
+            const amountInput = document.getElementById('modal-trans-amount').value;
+            const descInput = document.getElementById('modal-trans-desc').value.trim();
+
+            let amount = parseFloat(amountInput);
+            if (isNaN(amount) || amount <= 0) return alert('برجاء إدخال قيمة رقمية صحيحة أشي من الصفر');
+
+            if (activeTransactionType === 'شكك' && !descInput) {
+                return alert('برجاء إدخال نوع البضاعة والبيان (إلزامي)');
+            }
+
+            if (activeTransactionType === 'تسديد') amount = -Math.abs(amount);
+
+            const cust = customers.find(c => c.id == currentCustomerId);
+            if (!cust.transactions) cust.transactions = [];
+
+            const newTrans = {
                 id: Date.now(),
                 amount: amount,
-                type: type || (mode === 'تسديد' ? 'تسديد' : 'شكك'),
+                type: descInput || (activeTransactionType === 'تسديد' ? 'تسديد مبلغ' : 'شكك'),
                 date: new Date().toLocaleDateString('ar-EG'),
                 timestamp: Date.now()
-            });
+            };
 
-            saveLocal();
+            cust.transactions.push(newTrans);
+            saveData();
+
+            closeModal('transaction-modal');
             openCustomerDetails(currentCustomerId);
+            showToast(`تم تسجيل ${activeTransactionType} بنجاح بمبلغ ${Math.abs(amount)} جنيه`);
         }
 
         function deleteTransaction(transId) {
             if (!confirm('حذف هذه العملية؟')) return;
             const cust = customers.find(c => c.id == currentCustomerId);
             cust.transactions = cust.transactions.filter(t => t.id !== transId);
-            saveLocal();
+            saveData();
             openCustomerDetails(currentCustomerId);
         }
 
         function deleteCurrentCustomer() {
-            if (!confirm('هل أنت متأكد من حذف الزبون بكل حساباته؟')) return;
+            if (!confirm('هل أنت متأكد من حذف الزبون وسجل معاملاته بالكامل؟')) return;
             customers = customers.filter(c => c.id != currentCustomerId);
-            saveLocal();
+            saveData();
             showView('main-view', document.getElementById('btn-main'));
+            showToast('تم حذف الزبون بنجاح');
         }
 
-        // ==========================================
-        // 📊 صفحة الإحصائيات الشاملة (المعادة)
-        // ==========================================
+        // الإحصائيات الشاملة
         function showStats(btnElem = null) {
             showView('stats-view', btnElem);
             const container = document.getElementById('stats-content');
-            let totalAll = 0;
             
+            let totalAll = 0;
+            let todayShokok = 0;
+            let todayPaid = 0;
+
+            const todayStr = new Date().toLocaleDateString('ar-EG');
             const groups = { upTo100: [], upTo200: [], upTo400: [], over500: [] };
+            const lateCustomers = [];
+
+            const now = Date.now();
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
 
             customers.forEach(c => {
-                const sum = (c.transactions || []).reduce((acc, t) => acc + t.amount, 0);
+                const transactions = c.transactions || [];
+                const sum = transactions.reduce((acc, t) => acc + t.amount, 0);
                 totalAll += sum;
 
-                if (sum <= 100 && sum > 0) groups.upTo100.push(c.name);
-                else if (sum <= 200 && sum > 0) groups.upTo200.push(c.name);
-                else if (sum <= 400 && sum > 0) groups.upTo400.push(c.name);
-                else if (sum > 400) groups.over500.push(c.name);
+                // إحصائيات اليوم
+                transactions.forEach(t => {
+                    if (t.date === todayStr) {
+                        if (t.amount > 0) todayShokok += t.amount;
+                        else todayPaid += Math.abs(t.amount);
+                    }
+                });
+
+                // تصنيف الشرائح
+                const custObj = { id: c.id, name: c.name };
+                if (sum <= 100 && sum > 0) groups.upTo100.push(custObj);
+                else if (sum <= 200 && sum > 0) groups.upTo200.push(custObj);
+                else if (sum <= 400 && sum > 0) groups.upTo400.push(custObj);
+                else if (sum > 400) groups.over500.push(custObj);
+
+                // متأخري السداد (لم يسددوا أي مبلغ إطلاقاً منذ فترة)
+                const hasPayment = transactions.some(t => t.amount < 0);
+                if (!hasPayment && sum > 0) {
+                    const created = c.createdAt || (transactions[0] ? transactions[0].timestamp : now);
+                    const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+                    if (diffDays >= 7) {
+                        lateCustomers.push({ id: c.id, name: c.name, days: diffDays, amount: sum });
+                    }
+                }
             });
 
-            const renderTags = (arr) => arr.length ? arr.map(n => `<span class="tag">${n}</span>`).join('') : '<small style="color:var(--text-muted)">لا يوجد</small>';
+            const renderInteractiveTags = (arr, colorClass) => {
+                if (!arr.length) return '<small style="color:var(--text-muted)">لا يوجد</small>';
+                return arr.map(item => `<span class="tag ${colorClass}" onclick="openCustomerDetails(${item.id})">${item.name}</span>`).join('');
+            };
+
+            let lateListHTML = lateCustomers.length ? lateCustomers.map((item, index) => 
+                `<li style="margin-bottom:8px; cursor:pointer; color:var(--danger);" onclick="openCustomerDetails(${item.id})">
+                    <b>${index + 1}- ${item.name}</b> (متأخر منذ ${item.days} يوم - المتبقي: ${item.amount} ج)
+                 </li>`
+            ).join('') : '<p style="color:var(--text-muted)">لا يوجد زبائن متأخرون في السداد</p>';
 
             container.innerHTML = `
                 <div class="card-box">
                     <h2>إحصائيات الشكك الشاملة</h2>
-                    <div class="total-banner" style="margin-bottom: 25px;">
-                        <span>إجمالي ديون المحل الكلية:</span>
-                        <span>${totalAll} جنيه</span>
+                    
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius:12px;">
+                            <div style="color:var(--text-muted); font-size:13px;">شكك اليوم الحالي</div>
+                            <div style="font-size:22px; font-weight:bold; color:var(--primary);">+${todayShokok} ج</div>
+                        </div>
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius:12px;">
+                            <div style="color:var(--text-muted); font-size:13px;">سدادات اليوم الحالي</div>
+                            <div style="font-size:22px; font-weight:bold; color:var(--success);">${todayPaid} ج</div>
+                        </div>
+                        <div style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius:12px;">
+                            <div style="color:var(--text-muted); font-size:13px;">إجمالي الديون الكلية</div>
+                            <div style="font-size:22px; font-weight:bold; color:var(--purple);">${totalAll} ج</div>
+                        </div>
                     </div>
 
                     <div class="stats-section">
                         <h4><i class="fa-solid fa-users"></i> توزيع الزبائن حسب الشرائح المالية:</h4>
-                        <p><strong>حتى 100 جنيه (${groups.upTo100.length}):</strong><br>${renderTags(groups.upTo100)}</p>
-                        <p><strong>حتى 200 جنيه (${groups.upTo200.length}):</strong><br>${renderTags(groups.upTo200)}</p>
-                        <p><strong>حتى 400 جنيه (${groups.upTo400.length}):</strong><br>${renderTags(groups.upTo400)}</p>
-                        <p><strong>أكثر من 400 جنيه (${groups.over500.length}):</strong><br>${renderTags(groups.over500)}</p>
+                        <p><strong>حتى 100 جنيه (وعددهم ${groups.upTo100.length}):</strong><br>${renderInteractiveTags(groups.upTo100, 'tag-green')}</p>
+                        <p><strong>حتى 200 جنيه (وعددهم ${groups.upTo200.length}):</strong><br>${renderInteractiveTags(groups.upTo200, 'tag-blue')}</p>
+                        <p><strong>حتى 400 جنيه (وعددهم ${groups.upTo400.length}):</strong><br>${renderInteractiveTags(groups.upTo400, 'tag-yellow')}</p>
+                        <p><strong>أكثر من 500 جنيه (وعددهم ${groups.over500.length}):</strong><br>${renderInteractiveTags(groups.over500, 'tag-red')}</p>
+                    </div>
+
+                    <div class="stats-section">
+                        <h4><i class="fa-solid fa-clock-rotate-left"></i> الزبائن متأخري السداد (لم يسددوا أي مبلغ منذ أسبوع أو أكثر):</h4>
+                        <ol style="padding-right:20px; margin:0;">
+                            ${lateListHTML}
+                        </ol>
                     </div>
                 </div>
             `;
         }
 
-        // ==========================================
-        // 📊 تصدير وإسترجاع EXCEL
-        // ==========================================
+        // طباعة PDF المحاسبية
+        function generatePDF() {
+            const cust = customers.find(c => c.id == currentCustomerId);
+            const total = (cust.transactions || []).reduce((acc, t) => acc + t.amount, 0);
+
+            let rows = (cust.transactions || []).map(t => `
+                <tr>
+                    <td style="padding:8px; border:1px solid #ccc; text-align:center;">${t.amount > 0 ? '+' : ''}${t.amount} ج</td>
+                    <td style="padding:8px; border:1px solid #ccc; text-align:center;">${t.type}</td>
+                    <td style="padding:8px; border:1px solid #ccc; text-align:center;">${t.date}</td>
+                </tr>
+            `).join('');
+
+            const element = document.createElement('div');
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+            element.style.direction = 'rtl';
+            element.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:20px;">
+                    <div>
+                        <h1 style="margin:0; font-size:20px;">سوبر ماركت الطيب</h1>
+                        <p style="margin:5px 0 0 0; font-size:12px; color:#555;">هاتف: 01000000000</p>
+                    </div>
+                    <div style="text-align:left;">
+                        <h3 style="margin:0; color:#3b82f6;">كشف حساب زبون</h3>
+                        <p style="margin:5px 0 0 0; font-size:12px;">تاريخ الإصدار: ${new Date().toLocaleDateString('ar-EG')}</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:15px; font-size:14px;">
+                    <p><b>اسم الزبون:</b> ${cust.name}</p>
+                    <p><b>الملاحظات:</b> ${cust.notes || 'لا يوجد'}</p>
+                </div>
+
+                <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                    <thead>
+                        <tr style="background:#f2f2f2;">
+                            <th style="padding:8px; border:1px solid #ccc;">المبلغ</th>
+                            <th style="padding:8px; border:1px solid #ccc;">البيان</th>
+                            <th style="padding:8px; border:1px solid #ccc;">التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+
+                <div style="background:#3b82f6; color:white; padding:12px; font-size:16px; font-weight:bold; text-align:space-between; border-radius:6px; display:flex; justify-content:space-between;">
+                    <span>إجمالي المتبقي الحساب:</span>
+                    <span>${total} جنيه</span>
+                </div>
+            `;
+
+            const opt = {
+                margin:       10,
+                filename:     `كشف_حساب_${cust.name}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // تصدير واستيراد Excel
         function exportToExcel() {
             const excelData = [];
             customers.forEach(c => {
+                if(!c) return;
                 const total = (c.transactions || []).reduce((acc, t) => acc + t.amount, 0);
                 if ((c.transactions || []).length === 0) {
                     excelData.push({
-                        "اسم الزبون": c.name,
-                        "الملاحظات": c.notes || '',
-                        "بيان المعاملة": 'لا يوجد',
-                        "مبلغ المعاملة": 0,
-                        "التاريخ": '-',
-                        "إجمالي المديونية الحالية": total
+                        "اسم الزبون": c.name, "الملاحظات": c.notes || '', "بيان المعاملة": 'لا يوجد', "مبلغ المعاملة": 0, "التاريخ": '-', "إجمالي المديونية": total
                     });
                 } else {
                     c.transactions.forEach(t => {
                         excelData.push({
-                            "اسم الزبون": c.name,
-                            "الملاحظات": c.notes || '',
-                            "بيان المعاملة": t.type,
-                            "مبلغ المعاملة": t.amount,
-                            "التاريخ": t.date,
-                            "إجمالي المديونية الحالية": total
+                            "اسم الزبون": c.name, "الملاحظات": c.notes || '', "بيان المعاملة": t.type, "مبلغ المعاملة": t.amount, "التاريخ": t.date, "إجمالي المديونية": total
                         });
                     });
                 }
@@ -698,7 +740,7 @@
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "الشكك");
-            XLSX.writeFile(workbook, `بيانات_الشكك_${new Date().toLocaleDateString('ar-EG')}.xlsx`);
+            XLSX.writeFile(workbook, `نسخة_أوفلاين_الشكك_${new Date().toLocaleDateString('ar-EG')}.xlsx`);
         }
 
         function importFromExcel(event) {
@@ -730,14 +772,25 @@
                 });
 
                 customers = Object.values(restored);
-                saveLocal();
+                saveData();
                 renderCustomers();
-                alert('تم استيراد ملف Excel بنجاح!');
+                showToast('تم دمج بيانات Excel بنجاح!');
             };
             reader.readAsArrayBuffer(file);
         }
 
-        window.onload = loadInitialData;
+        // Modals & Toast Helpers
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        window.onload = loadData;
     </script>
 </body>
 </html>

@@ -3,470 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الشكك - المحل</title>
-    <!-- مكتبة تحويل HTML إلى PDF -->
+    <title>دفتر الشكك الإلكتروني - GitHub Edition</title>
+    <!-- مكتبة PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- أيقونات FontAwesome -->
+    <!-- مكتبة Excel SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- أيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            /* الألوان الرئيسية - الوضع الفاتح */
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --bg-sidebar: #1e293b;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-
             --primary: #3b82f6;
-            --primary-hover: #2563eb;
             --success: #10b981;
             --danger: #ef4444;
-            --warning: #f59e0b;
             --purple: #8b5cf6;
-
-            /* ألوان التمييز للزبائن */
             --debt-green: #10b981;
             --debt-blue: #3b82f6;
             --debt-yellow: #f59e0b;
             --debt-red: #ef4444;
-
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
 
         [data-theme="dark"] {
-            /* الألوان الرئيسية - الوضع المظلم */
             --bg-body: #0f172a;
             --bg-card: #1e293b;
             --bg-sidebar: #090d16;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #334155;
-
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
         }
 
-        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            min-height: 100vh;
-        }
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; min-height: 100vh; }
 
-        /* Sidebar UI */
-        .sidebar {
-            width: 80px;
-            background-color: var(--bg-sidebar);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-            position: fixed;
-            height: 100vh;
-            right: 0;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-md);
-        }
+        .sidebar { width: 80px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; align-items: center; padding: 20px 0; position: fixed; height: 100vh; right: 0; top: 0; z-index: 100; }
+        .sidebar-brand { color: var(--primary); font-size: 24px; margin-bottom: 30px; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
 
-        .sidebar-brand {
-            color: var(--primary);
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
+        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 20px; width: 50px; height: 50px; border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .nav-btn:hover, .nav-btn.active { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; }
 
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            align-items: center;
-        }
+        .main-wrapper { margin-right: 80px; flex: 1; padding: 30px; max-width: 1200px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 10px; }
 
-        .nav-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
+        .theme-toggle, .excel-btn { background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 16px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; box-shadow: var(--shadow-sm); }
+        .excel-btn-success { background-color: var(--success); color: white; border: none; }
 
-        .nav-btn:hover, .nav-btn.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
+        .search-container { position: relative; margin-bottom: 25px; }
+        .search-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-bar { width: 100%; padding: 14px 45px 14px 15px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); outline: none; }
 
-        .nav-btn.active::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            width: 4px;
-            height: 24px;
-            background-color: var(--primary);
-            border-radius: 4px 0 0 4px;
-        }
-
-        /* Main Content Layout */
-        .main-wrapper {
-            margin-right: 80px;
-            flex: 1;
-            padding: 30px;
-            max-width: 1200px;
-        }
-
-        /* Top Bar */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .top-bar h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .theme-toggle {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--primary);
-        }
-
-        /* UI Components */
-        .search-container {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
-        .search-container i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 14px 45px 14px 15px;
-            font-size: 15px;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-main);
-            outline: none;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .search-bar:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: var(--shadow-sm);
-        }
-
+        .btn { padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background-color: var(--primary); color: #fff; }
-        .btn-primary:hover { background-color: var(--primary-hover); }
-
         .btn-success { background-color: var(--success); color: #fff; }
         .btn-danger { background-color: var(--danger); color: #fff; }
         .btn-purple { background-color: var(--purple); color: #fff; }
         .btn-secondary { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background-color: var(--border-color); }
 
-        /* Customers Grid */
-        .customers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-        }
-
-        .customer-card {
-            background-color: var(--bg-card);
-            border-radius: 14px;
-            padding: 20px;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transform: translateY(0);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .customer-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .customer-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 6px;
-            height: 100%;
-        }
-
+        .customers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .customer-card { background-color: var(--bg-card); border-radius: 14px; padding: 20px; cursor: pointer; border: 1px solid var(--border-color); position: relative; }
+        .customer-card::before { content: ''; position: absolute; top: 0; right: 0; width: 6px; height: 100%; }
         .card-green::before { background-color: var(--debt-green); }
         .card-blue::before { background-color: var(--debt-blue); }
         .card-yellow::before { background-color: var(--debt-yellow); }
         .card-red::before { background-color: var(--debt-red); }
 
-        .customer-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-        }
+        .card-box { background-color: var(--bg-card); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 14px; text-align: center; border-bottom: 1px solid var(--border-color); }
 
-        .customer-card .amount {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .customer-card .amount span {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 400;
-        }
-
-        /* Detail View & Tables */
-        .card-box {
-            background-color: var(--bg-card);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 25px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            padding: 14px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
-        }
-
-        th {
-            background-color: rgba(0, 0, 0, 0.02);
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .total-banner {
-            background: linear-gradient(135deg, var(--primary), var(--purple));
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            outline: none;
-        }
-
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: var(--primary);
-        }
-
-        /* Stats Styles */
-        .stats-section {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .tag {
-            display: inline-block;
-            background-color: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 8px;
-            margin: 4px;
-            font-size: 13px;
-            font-weight: 600;
-        }
+        .total-banner { background: linear-gradient(135deg, var(--primary), var(--purple)); color: white; border-radius: 12px; padding: 20px; font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; margin-top: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-main); }
 
         .hidden { display: none !important; }
 
-        /* PDF Temp Design (For Printing) */
-        #pdf-template {
-            padding: 30px;
-            font-family: system-ui, sans-serif;
-            color: #1e293b;
-            background: #ffffff;
-        }
-        .pdf-header { text-align: center; background: #0f172a; color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .pdf-header h1 { margin: 0 0 5px 0; font-size: 22pt; }
-        .pdf-info { border: 1px solid #e2e8f0; background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .pdf-table th { background-color: #1e293b; color: #ffffff; padding: 10px; border: 1px solid #cbd5e1; }
-        .pdf-table td { padding: 10px; border: 1px solid #cbd5e1; text-align: center; }
-        .pdf-total { background-color: #f1f5f9; border: 2px solid #0f172a; padding: 15px; text-align: center; font-size: 14pt; font-weight: bold; border-radius: 8px; }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; justify-content: space-around; padding: 0; }
             .sidebar-brand { display: none; }
-            .sidebar-menu { flex-direction: row; justify-content: space-around; }
             .main-wrapper { margin-right: 0; padding: 15px; margin-bottom: 70px; }
-            .nav-btn.active::before { width: 100%; height: 4px; bottom: 0; right: 0; top: auto; border-radius: 4px 4px 0 0; }
         }
     </style>
 </head>
 <body>
 
-    <!-- الشريط الجانبي الثابت -->
     <div class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fa-solid fa-store"></i>
-        </div>
+        <div class="sidebar-brand"><i class="fa-solid fa-store"></i></div>
         <div class="sidebar-menu">
-            <button class="nav-btn active" title="الرئيسية" onclick="showView('main-view', this)">
-                <i class="fa-solid fa-house"></i>
-            </button>
-            <button class="nav-btn" title="إضافة زبون جديد" onclick="showView('add-customer-view', this)">
-                <i class="fa-solid fa-user-plus"></i>
-            </button>
-            <button class="nav-btn" title="الإحصائيات" onclick="showStats(this)">
-                <i class="fa-solid fa-chart-pie"></i>
-            </button>
+            <button class="nav-btn active" title="الرئيسية" onclick="showView('main-view', this)"><i class="fa-solid fa-house"></i></button>
+            <button class="nav-btn" title="إضافة زبون" onclick="showView('add-customer-view', this)"><i class="fa-solid fa-user-plus"></i></button>
+            <button class="nav-btn" title="الإحصائيات" onclick="showStats(this)"><i class="fa-solid fa-chart-pie"></i></button>
         </div>
     </div>
 
-    <!-- المحتوى الرئيسي -->
     <div class="main-wrapper">
-
-        <!-- Top Header Bar -->
         <div class="top-bar">
-            <div>
-                <h1 id="page-title">دفتر الشكك الإلكتروني</h1>
+            <h1>دفتر الشكك الإلكتروني</h1>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="excel-btn excel-btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> تحميل شيت Excel</button>
+                <button class="excel-btn" onclick="document.getElementById('excel-input').click()"><i class="fa-solid fa-file-import"></i> رفع Excel جديد</button>
+                <input type="file" id="excel-input" class="hidden" accept=".xlsx, .xls" onchange="importFromExcel(event)">
+                <button class="theme-toggle" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
             </div>
-            <button class="theme-toggle" onclick="toggleTheme()">
-                <i class="fa-solid fa-moon" id="theme-icon"></i>
-                <span id="theme-text">الوضع المظلم</span>
-            </button>
         </div>
 
-        <!-- Main Dashboard View -->
+        <!-- الرئيسية -->
         <div id="main-view">
             <div class="search-container">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="search-input" class="search-bar" placeholder="ابحث باسم الزبون..." oninput="renderCustomers()">
             </div>
-            
             <div id="customers-container" class="customers-grid"></div>
         </div>
 
-        <!-- Add Customer View -->
+        <!-- إضافة زبون -->
         <div id="add-customer-view" class="hidden">
             <div class="card-box">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2>إضافة زبون جديد</h2>
-                    <button class="btn btn-secondary" onclick="showView('main-view')"><i class="fa-solid fa-arrow-right"></i> إلغاء</button>
+                <h2>إضافة زبون جديد</h2>
+                <div class="form-group">
+                    <label>الاسم الرباعي:</label>
+                    <input type="text" id="cust-name" placeholder="اسم الزبون الكامل">
                 </div>
                 <div class="form-group">
-                    <label>الاسم الرباعي للزبون:</label>
-                    <input type="text" id="cust-name" placeholder="أدخل اسم الزبون الكامل">
+                    <label>ملاحظات:</label>
+                    <textarea id="cust-notes" rows="3" placeholder="رقم الهاتف أو المكان..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>ملاحظات ومعلومات إضافية:</label>
-                    <textarea id="cust-notes" rows="3" placeholder="محل الإقامة، رقم الهاتف، أو تفاصيل أخرى..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>قيمة الشكك الأولية (إن وجدت):</label>
+                    <label>قيمة الشكك الأولية:</label>
                     <input type="number" id="cust-initial-amount" value="0">
                 </div>
                 <div class="form-group">
-                    <label>نوع الشكك الأولية:</label>
-                    <input type="text" id="cust-initial-type" placeholder="مثال: سكر، شاي، حساب قديم">
+                    <label>البيان:</label>
+                    <input type="text" id="cust-initial-type" placeholder="نوع البضاعة...">
                 </div>
-                <button class="btn btn-primary" onclick="saveCustomer()"><i class="fa-solid fa-floppy-disk"></i> حفظ الزبون</button>
+                <button class="btn btn-primary" onclick="saveCustomer()"><i class="fa-solid fa-floppy-disk"></i> حفظ البيانات</button>
             </div>
         </div>
 
-        <!-- Customer Details View -->
+        <!-- تفاصيل الزبون -->
         <div id="customer-details-view" class="hidden">
             <div class="card-box">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                     <div>
-                        <h2 id="det-cust-name" style="margin: 0;">اسم الزبون</h2>
-                        <p id="det-cust-notes" style="color: var(--text-muted); margin: 5px 0 0 0; font-size: 14px;"></p>
+                        <h2 id="det-cust-name" style="margin:0;"></h2>
+                        <p id="det-cust-notes" style="color: var(--text-muted); margin: 5px 0 0 0;"></p>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-purple" onclick="generateCustomerPDF()"><i class="fa-solid fa-file-pdf"></i> كشف حساب PDF</button>
                         <button class="btn btn-danger" onclick="deleteCurrentCustomer()"><i class="fa-solid fa-trash"></i> حذف</button>
                         <button class="btn btn-secondary" onclick="showView('main-view')"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
                     </div>
@@ -480,9 +172,9 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>قيمة المعاملة</th>
-                            <th>البيان / نوع الشكك</th>
-                            <th>تاريخ المعاملة</th>
+                            <th>المبلغ</th>
+                            <th>البيان</th>
+                            <th>التاريخ</th>
                             <th>إجراء</th>
                         </tr>
                     </thead>
@@ -490,350 +182,240 @@
                 </table>
 
                 <div class="total-banner">
-                    <span>إجمالي المديونية المتبقية:</span>
+                    <span>إجمالي المتبقي:</span>
                     <span><span id="det-cust-total">0</span> جنيه</span>
                 </div>
             </div>
         </div>
 
-        <!-- Statistics View -->
+        <!-- الإحصائيات -->
         <div id="stats-view" class="hidden">
             <div id="stats-content"></div>
         </div>
-
     </div>
 
-    <!-- القالب المخفي لتوليد الـ PDF -->
-    <div id="pdf-container" class="hidden">
-        <div id="pdf-template">
-            <div class="pdf-header">
-                <h1>كشف حساب زبون</h1>
-                <p>دفتر الشكك الإلكتروني - المحل</p>
-            </div>
+    <script>
+        let customers = [];
+        let currentCustomerId = null;
 
-            <div class="pdf-info">
-                <h2 id="pdf-cust-name">اسم الزبون</h2>
-                <p id="pdf-cust-notes">ملاحظات: لا يوجد</p>
-                <p id="pdf-print-date">تاريخ الإصدار: </p>
-            </div>
-
-            <table class="pdf-table">
-                <thead>
-                    <tr>
-                        <th>م</th>
-                        <th>قيمة المعاملة</th>
-                        <th>نوع الشكك / البيان</th>
-                        <th>تاريخ المعاملة</th>
-                    </tr>
-                </thead>
-                <tbody id="pdf-transactions-body"></tbody>
-            </table>
-
-            <div class="pdf-total">
-                إجمالي المبلغ المطلوب (المتبقي): <span id="pdf-cust-total" style="color: #ef4444;">0</span> جنيه
-            </div>
-        </div>
-    </div>
-
-<script>
-    let customers = JSON.parse(localStorage.getItem('shokok_customers')) || [];
-    let currentCustomerId = null;
-
-    // Dark Mode / Light Mode Functionality
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        
-        const icon = document.getElementById('theme-icon');
-        const text = document.getElementById('theme-text');
-        
-        if (newTheme === 'dark') {
-            icon.className = 'fa-solid fa-sun';
-            text.innerText = 'الوضع الفاتح';
-        } else {
-            icon.className = 'fa-solid fa-moon';
-            text.innerText = 'الوضع المظلم';
-        }
-    }
-
-    // Load Saved Theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    window.addEventListener('DOMContentLoaded', () => {
-        if (savedTheme === 'dark') {
-            document.getElementById('theme-icon').className = 'fa-solid fa-sun';
-            document.getElementById('theme-text').innerText = 'الوضع الفاتح';
-        }
-    });
-
-    function saveToStorage() {
-        localStorage.setItem('shokok_customers', JSON.stringify(customers));
-    }
-
-    function showView(viewId, btnElem = null) {
-        ['main-view', 'add-customer-view', 'customer-details-view', 'stats-view'].forEach(id => {
-            document.getElementById(id).classList.add('hidden');
-        });
-        document.getElementById(viewId).classList.remove('hidden');
-
-        if(btnElem) {
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            btnElem.classList.add('active');
+        // تحميل البيانات أولاً من LocalStorage، وإن لم توجد يُحمل من ملف data.json
+        async function loadInitialData() {
+            const localData = localStorage.getItem('github_shokok_data');
+            if (localData) {
+                customers = JSON.parse(localData);
+                renderCustomers();
+            } else {
+                try {
+                    const res = await fetch('./data.json');
+                    if (res.ok) {
+                        customers = await res.json();
+                        saveLocal();
+                        renderCustomers();
+                    }
+                } catch (err) {
+                    console.log('لم يتم العثور على data.json أولي');
+                }
+            }
         }
 
-        if(viewId === 'main-view') renderCustomers();
-    }
-
-    function getColorClass(amount) {
-        if (amount <= 100) return 'card-green';
-        if (amount <= 200) return 'card-blue';
-        if (amount <= 400) return 'card-yellow';
-        return 'card-red';
-    }
-
-    function renderCustomers() {
-        const grid = document.getElementById('customers-container');
-        const query = document.getElementById('search-input').value.toLowerCase();
-        grid.innerHTML = '';
-
-        const filtered = customers.filter(c => c.name.toLowerCase().includes(query));
-
-        if (filtered.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">لا يوجد زبائن مطاطبقين للبحث</div>`;
-            return;
+        function saveLocal() {
+            localStorage.setItem('github_shokok_data', JSON.stringify(customers));
         }
 
-        filtered.forEach(c => {
-            const total = c.transactions.reduce((acc, t) => acc + t.amount, 0);
-            const card = document.createElement('div');
-            card.className = `customer-card ${getColorClass(total)}`;
-            card.onclick = () => openCustomerDetails(c.id);
-            card.innerHTML = `
-                <h3>${c.name}</h3>
-                <div class="amount">${total} <span>جنيه</span></div>
-            `;
-            grid.appendChild(card);
-        });
-    }
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('theme-icon').className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
 
-    function saveCustomer() {
-        const name = document.getElementById('cust-name').value;
-        const notes = document.getElementById('cust-notes').value;
-        const amount = parseFloat(document.getElementById('cust-initial-amount').value) || 0;
-        const type = document.getElementById('cust-initial-type').value || 'حساب أول الوقت';
+        function showView(viewId, btnElem = null) {
+            ['main-view', 'add-customer-view', 'customer-details-view', 'stats-view'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+            if (viewId === 'main-view') renderCustomers();
+        }
 
-        if (!name) return alert('برجاء كتابة اسم الزبون');
+        function renderCustomers() {
+            const grid = document.getElementById('customers-container');
+            const query = document.getElementById('search-input').value.toLowerCase();
+            grid.innerHTML = '';
 
-        const newCust = {
-            id: Date.now(),
-            name,
-            notes,
-            transactions: []
-        };
+            const filtered = customers.filter(c => c.name && c.name.toLowerCase().includes(query));
 
-        if (amount > 0) {
-            newCust.transactions.push({
-                id: Date.now() + 1,
-                amount: amount,
-                type: type,
-                date: new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' }),
-                timestamp: Date.now(),
-                isPayment: false
+            filtered.forEach(c => {
+                const total = (c.transactions || []).reduce((acc, t) => acc + t.amount, 0);
+                const card = document.createElement('div');
+                card.className = `customer-card card-blue`;
+                card.onclick = () => openCustomerDetails(c.id);
+                card.innerHTML = `<h3>${c.name}</h3><div><b>${total}</b> جنيه</div>`;
+                grid.appendChild(card);
             });
         }
 
-        customers.push(newCust);
-        saveToStorage();
-        document.getElementById('cust-name').value = '';
-        document.getElementById('cust-notes').value = '';
-        document.getElementById('cust-initial-amount').value = '0';
-        document.getElementById('cust-initial-type').value = '';
-        showView('main-view');
-    }
+        function saveCustomer() {
+            const name = document.getElementById('cust-name').value;
+            const notes = document.getElementById('cust-notes').value;
+            const amount = parseFloat(document.getElementById('cust-initial-amount').value) || 0;
+            const type = document.getElementById('cust-initial-type').value || 'حساب أول الوقت';
 
-    function openCustomerDetails(id) {
-        currentCustomerId = id;
-        const cust = customers.find(c => c.id === id);
-        document.getElementById('det-cust-name').innerText = cust.name;
-        document.getElementById('det-cust-notes').innerText = cust.notes || 'لا توجد ملاحظات مدونة';
-        
-        const tbody = document.getElementById('transactions-body');
-        tbody.innerHTML = '';
-        
-        let total = 0;
-        cust.transactions.forEach((t) => {
-            total += t.amount;
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td style="color: ${t.amount < 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:bold;">${t.amount > 0 ? '+' : ''}${t.amount} جنيه</td>
-                <td>${t.type}</td>
-                <td>${t.date}</td>
-                <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="deleteTransaction(${t.id})"><i class="fa-solid fa-trash"></i></button></td>
-            `;
-            tbody.appendChild(row);
-        });
+            if (!name) return alert('أدخل اسم الزبون');
 
-        document.getElementById('det-cust-total').innerText = total;
-        showView('customer-details-view');
-    }
+            const newCust = {
+                id: Date.now(),
+                name: name,
+                notes: notes,
+                transactions: amount > 0 ? [{
+                    id: Date.now() + 1,
+                    amount: amount,
+                    type: type,
+                    date: new Date().toLocaleDateString('ar-EG')
+                }] : []
+            };
 
-    function addTransactionPrompt(mode) {
-        const amountStr = prompt(mode === 'شكك' ? 'أدخل قيمة الشكك:' : 'أدخل المبلغ المسدد:');
-        if (!amountStr) return;
-        let amount = parseFloat(amountStr);
-        if (isNaN(amount)) return alert('مبلغ غير صحيح');
+            customers.push(newCust);
+            saveLocal();
+            showView('main-view');
+        }
 
-        const type = prompt('أدخل بيان المعاملة (نوع الشكك أو ملاحظة التسديد):', mode === 'تسديد' ? 'تسديد مبلغ' : 'شكك جديدة');
-        
-        const isPayment = (mode === 'تسديد');
-        if (isPayment) amount = -Math.abs(amount);
+        function openCustomerDetails(id) {
+            currentCustomerId = id;
+            const cust = customers.find(c => c.id == id);
+            if (!cust) return;
 
-        const cust = customers.find(c => c.id === currentCustomerId);
-        cust.transactions.push({
-            id: Date.now(),
-            amount: amount,
-            type: type || (isPayment ? 'تسديد' : 'شكك'),
-            date: new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' }),
-            timestamp: Date.now(),
-            isPayment: isPayment
-        });
+            document.getElementById('det-cust-name').innerText = cust.name;
+            document.getElementById('det-cust-notes').innerText = cust.notes || '';
 
-        saveToStorage();
-        openCustomerDetails(currentCustomerId);
-    }
+            const tbody = document.getElementById('transactions-body');
+            tbody.innerHTML = '';
+            let total = 0;
 
-    function deleteTransaction(transId) {
-        if (!confirm('هل أنت تأكد من حذف هذه العملية؟')) return;
-        const cust = customers.find(c => c.id === currentCustomerId);
-        cust.transactions = cust.transactions.filter(t => t.id !== transId);
-        saveToStorage();
-        openCustomerDetails(currentCustomerId);
-    }
+            (cust.transactions || []).forEach(t => {
+                total += t.amount;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${t.amount} جنيه</td>
+                    <td>${t.type}</td>
+                    <td>${t.date}</td>
+                    <td><button class="btn btn-danger" onclick="deleteTransaction(${t.id})">حذف</button></td>
+                `;
+                tbody.appendChild(row);
+            });
 
-    function deleteCurrentCustomer() {
-        if (!confirm('هل أنت متأكد من حذف هذا الزبون بكل سجلات معاملاته؟')) return;
-        customers = customers.filter(c => c.id !== currentCustomerId);
-        saveToStorage();
-        showView('main-view');
-    }
+            document.getElementById('det-cust-total').innerText = total;
+            showView('customer-details-view');
+        }
 
-    function generateCustomerPDF() {
-        const cust = customers.find(c => c.id === currentCustomerId);
-        if (!cust) return;
+        function addTransactionPrompt(mode) {
+            const amountStr = prompt(mode === 'شكك' ? 'أدخل المبلغ:' : 'أدخل المسدد:');
+            if (!amountStr) return;
+            let amount = parseFloat(amountStr);
+            if (isNaN(amount)) return;
 
-        document.getElementById('pdf-cust-name').innerText = "الزبون: " + cust.name;
-        document.getElementById('pdf-cust-notes').innerText = "ملاحظات: " + (cust.notes || 'لا توجد');
-        document.getElementById('pdf-print-date').innerText = "تاريخ الإصدار: " + new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
+            if (mode === 'تسديد') amount = -Math.abs(amount);
+            const type = prompt('البيان:', mode === 'تسديد' ? 'تسديد' : 'بضاعة');
 
-        const pdfTbody = document.getElementById('pdf-transactions-body');
-        pdfTbody.innerHTML = '';
-        
-        let total = 0;
-        cust.transactions.forEach((t, index) => {
-            total += t.amount;
-            const row = document.createElement('tr');
-            const sign = t.amount > 0 ? '+ ' : '';
-            const color = t.amount < 0 ? '#10b981' : '#ef4444';
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td style="color: ${color}; font-weight: bold;">${sign}${t.amount} جنيه</td>
-                <td>${t.type}</td>
-                <td>${t.date}</td>
-            `;
-            pdfTbody.appendChild(row);
-        });
+            const cust = customers.find(c => c.id == currentCustomerId);
+            cust.transactions.push({
+                id: Date.now(),
+                amount: amount,
+                type: type,
+                date: new Date().toLocaleDateString('ar-EG')
+            });
 
-        document.getElementById('pdf-cust-total').innerText = total;
-        const element = document.getElementById('pdf-template');
-        
-        const opt = {
-            margin: 10,
-            filename: `كشف_حساب_${cust.name.replace(/\s+/g, '_')}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+            saveLocal();
+            openCustomerDetails(currentCustomerId);
+        }
 
-        html2pdf().set(opt).from(element).save();
-    }
+        function deleteTransaction(transId) {
+            const cust = customers.find(c => c.id == currentCustomerId);
+            cust.transactions = cust.transactions.filter(t => t.id !== transId);
+            saveLocal();
+            openCustomerDetails(currentCustomerId);
+        }
 
-    function showStats(btnElem = null) {
-        showView('stats-view', btnElem);
-        const container = document.getElementById('stats-content');
-        let totalAll = 0;
-        
-        const groups = { upTo100: [], upTo200: [], upTo400: [], over500: [] };
-        const now = Date.now();
-        const DAY = 24 * 60 * 60 * 1000;
-        const inactive = { week: [], twoWeeks: [], threeWeeks: [], month: [], monthHalf: [], twoMonths: [] };
-
-        customers.forEach(c => {
-            const sum = c.transactions.reduce((acc, t) => acc + t.amount, 0);
-            totalAll += sum;
-
-            if (sum <= 100) groups.upTo100.push(c.name);
-            else if (sum <= 200) groups.upTo200.push(c.name);
-            else if (sum <= 400) groups.upTo400.push(c.name);
-            else groups.over500.push(c.name);
-
-            if (sum > 0) {
-                const payments = c.transactions.filter(t => t.isPayment);
-                let lastPaymentTime = 0;
-                
-                if (payments.length > 0) {
-                    lastPaymentTime = Math.max(...payments.map(p => p.timestamp || 0));
-                } else if (c.transactions.length > 0) {
-                    lastPaymentTime = Math.min(...c.transactions.map(t => t.timestamp || 0));
-                }
-
-                if (lastPaymentTime > 0) {
-                    const daysPassed = (now - lastPaymentTime) / DAY;
-
-                    if (daysPassed >= 60) inactive.twoMonths.push(c.name);
-                    else if (daysPassed >= 45) inactive.monthHalf.push(c.name);
-                    else if (daysPassed >= 30) inactive.month.push(c.name);
-                    else if (daysPassed >= 21) inactive.threeWeeks.push(c.name);
-                    else if (daysPassed >= 14) inactive.twoWeeks.push(c.name);
-                    else if (daysPassed >= 7) inactive.week.push(c.name);
-                }
+        function deleteCurrentCustomer() {
+            if (confirm('حذف هذا الزبون؟')) {
+                customers = customers.filter(c => c.id != currentCustomerId);
+                saveLocal();
+                showView('main-view');
             }
-        });
+        }
 
-        const renderTags = (arr) => arr.length ? arr.map(n => `<span class="tag">${n}</span>`).join('') : '<small style="color:var(--text-muted)">لا يوجد</small>';
+        // ==========================================
+        // 📊 تصدير وإسترجاع ملفات EXCEL
+        // ==========================================
+        function exportToExcel() {
+            const excelData = [];
+            customers.forEach(c => {
+                const total = (c.transactions || []).reduce((acc, t) => acc + t.amount, 0);
+                if ((c.transactions || []).length === 0) {
+                    excelData.push({
+                        "اسم الزبون": c.name,
+                        "الملاحظات": c.notes || '',
+                        "بيان المعاملة": 'لا يوجد',
+                        "مبلغ المعاملة": 0,
+                        "التاريخ": '-',
+                        "إجمالي المديونية الحالية": total
+                    });
+                } else {
+                    c.transactions.forEach(t => {
+                        excelData.push({
+                            "اسم الزبون": c.name,
+                            "الملاحظات": c.notes || '',
+                            "بيان المعاملة": t.type,
+                            "مبلغ المعاملة": t.amount,
+                            "التاريخ": t.date,
+                            "إجمالي المديونية الحالية": total
+                        });
+                    });
+                }
+            });
 
-        container.innerHTML = `
-            <div class="card-box">
-                <h2>إحصائيات الشكك الشاملة</h2>
-                <div class="total-banner" style="margin-bottom: 25px;">
-                    <span>إجمالي ديون المحل الكلية:</span>
-                    <span>${totalAll} جنيه</span>
-                </div>
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "الشكك");
+            XLSX.writeFile(workbook, `بيانات_الشكك_${new Date().toLocaleDateString('ar-EG')}.xlsx`);
+        }
 
-                <div class="stats-section">
-                    <h4><i class="fa-solid fa-users"></i> توزيع الزبائن حسب الشرائح المالية:</h4>
-                    <p><strong>حتى 100 جنيه (${groups.upTo100.length}):</strong><br>${renderTags(groups.upTo100)}</p>
-                    <p><strong>حتى 200 جنيه (${groups.upTo200.length}):</strong><br>${renderTags(groups.upTo200)}</p>
-                    <p><strong>حتى 400 جنيه (${groups.upTo400.length}):</strong><br>${renderTags(groups.upTo400)}</p>
-                    <p><strong>فوق 500 جنيه (${groups.over500.length}):</strong><br>${renderTags(groups.over500)}</p>
-                </div>
+        function importFromExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-                <div class="stats-section" style="border-right: 4px solid var(--danger);">
-                    <h4><i class="fa-solid fa-clock-rotate-left"></i> متأخري السداد حسب الفترة الزمنية:</h4>
-                    <p>📅 <strong>منذ أسبوع (${inactive.week.length}):</strong><br>${renderTags(inactive.week)}</p>
-                    <p>📅 <strong>منذ أسبوعين (${inactive.twoWeeks.length}):</strong><br>${renderTags(inactive.twoWeeks)}</p>
-                    <p>📅 <strong>منذ 3 أسابيع (${inactive.threeWeeks.length}):</strong><br>${renderTags(inactive.threeWeeks)}</p>
-                    <p>📅 <strong>منذ شهر (${inactive.month.length}):</strong><br>${renderTags(inactive.month)}</p>
-                    <p>📅 <strong>منذ شهر ونصف (${inactive.monthHalf.length}):</strong><br>${renderTags(inactive.monthHalf)}</p>
-                    <p>🚨 <strong>منذ شهرين فأكثر (${inactive.twoMonths.length}):</strong><br>${renderTags(inactive.twoMonths)}</p>
-                </div>
-            </div>
-        `;
-    }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(worksheet);
 
-    // Initial render
-    renderCustomers();
-</script>
+                const restored = {};
+                json.forEach(row => {
+                    const name = row["اسم الزبون"];
+                    if (!name) return;
+                    if (!restored[name]) {
+                        restored[name] = { id: Date.now() + Math.random(), name: name, notes: row["الملاحظات"] || '', transactions: [] };
+                    }
+                    if (row["بيان المعاملة"] && row["بيان المعاملة"] !== 'لا يوجد') {
+                        restored[name].transactions.push({
+                            id: Date.now() + Math.random(),
+                            amount: parseFloat(row["مبلغ المعاملة"]) || 0,
+                            type: row["بيان المعاملة"],
+                            date: row["التاريخ"] || '-'
+                        });
+                    }
+                });
+
+                customers = Object.values(restored);
+                saveLocal();
+                renderCustomers();
+                alert('تم تحميل بيانات Excel بنجاح!');
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        window.onload = loadInitialData;
+    </script>
 </body>
 </html>

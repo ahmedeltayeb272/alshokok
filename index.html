@@ -3,115 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دفتر الشكك الإلكتروني - GitHub Edition</title>
+    <title>دفتر الشكك الإلكتروني</title>
     <!-- مكتبة PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- مكتبة Excel SheetJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- أيقونات -->
+    <!-- أيقونات FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
+            /* الألوان الرئيسية - الوضع الفاتح */
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --bg-sidebar: #1e293b;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
+
             --primary: #3b82f6;
+            --primary-hover: #2563eb;
             --success: #10b981;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --purple: #8b5cf6;
+
+            /* ألوان التمييز */
             --debt-green: #10b981;
             --debt-blue: #3b82f6;
             --debt-yellow: #f59e0b;
             --debt-red: #ef4444;
+
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
 
         [data-theme="dark"] {
+            /* الألوان الرئيسية - الوضع المظلم */
             --bg-body: #0f172a;
             --bg-card: #1e293b;
             --bg-sidebar: #090d16;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #334155;
+
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
         }
 
         * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; min-height: 100vh; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
 
-        .sidebar { width: 80px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; align-items: center; padding: 20px 0; position: fixed; height: 100vh; right: 0; top: 0; z-index: 100; }
-        .sidebar-brand { color: var(--primary); font-size: 24px; margin-bottom: 30px; }
-        .sidebar-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 80px;
+            background-color: var(--bg-sidebar);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            z-index: 100;
+        }
 
-        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 20px; width: 50px; height: 50px; border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-        .nav-btn:hover, .nav-btn.active { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; }
+        .sidebar-brand {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
 
-        .main-wrapper { margin-right: 80px; flex: 1; padding: 30px; max-width: 1200px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 10px; }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            align-items: center;
+        }
 
-        .theme-toggle, .excel-btn { background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 16px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; box-shadow: var(--shadow-sm); }
-        .excel-btn-success { background-color: var(--success); color: white; border: none; }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
 
-        .search-container { position: relative; margin-bottom: 25px; }
-        .search-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-        .search-bar { width: 100%; padding: 14px 45px 14px 15px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); outline: none; }
+        .nav-btn:hover, .nav-btn.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
 
-        .btn { padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+        .nav-btn.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            width: 4px;
+            height: 24px;
+            background-color: var(--primary);
+            border-radius: 4px 0 0 4px;
+        }
+
+        /* Layout Main */
+        .main-wrapper {
+            margin-right: 80px;
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            width: calc(100% - 80px);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .top-bar h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .theme-toggle, .excel-btn {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .excel-btn-success {
+            background-color: var(--success);
+            color: white;
+            border: none;
+        }
+
+        /* Elements */
+        .search-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .search-container i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 14px 45px 14px 15px;
+            font-size: 15px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
         .btn-primary { background-color: var(--primary); color: #fff; }
         .btn-success { background-color: var(--success); color: #fff; }
         .btn-danger { background-color: var(--danger); color: #fff; }
         .btn-purple { background-color: var(--purple); color: #fff; }
         .btn-secondary { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
 
-        .customers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-        .customer-card { background-color: var(--bg-card); border-radius: 14px; padding: 20px; cursor: pointer; border: 1px solid var(--border-color); position: relative; }
-        .customer-card::before { content: ''; position: absolute; top: 0; right: 0; width: 6px; height: 100%; }
+        /* Grid & Cards */
+        .customers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .customer-card {
+            background-color: var(--bg-card);
+            border-radius: 14px;
+            padding: 20px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s;
+        }
+
+        .customer-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .customer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+        }
+
         .card-green::before { background-color: var(--debt-green); }
         .card-blue::before { background-color: var(--debt-blue); }
         .card-yellow::before { background-color: var(--debt-yellow); }
         .card-red::before { background-color: var(--debt-red); }
 
-        .card-box { background-color: var(--bg-card); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); margin-bottom: 25px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 14px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .customer-card h3 { margin: 0 0 10px 0; font-size: 18px; }
+        .customer-card .amount { font-size: 20px; font-weight: 700; }
 
-        .total-banner { background: linear-gradient(135deg, var(--primary), var(--purple)); color: white; border-radius: 12px; padding: 20px; font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; margin-top: 20px; }
+        .card-box {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        /* Tables Responsive */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            min-width: 500px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        th { background-color: rgba(0, 0, 0, 0.02); color: var(--text-muted); }
+
+        .total-banner {
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-main); }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        /* Stats Tags */
+        .stats-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
 
         .hidden { display: none !important; }
 
+        /* Mobile Fixes */
         @media (max-width: 768px) {
-            .sidebar { width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; justify-content: space-around; padding: 0; }
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                bottom: 0;
+                top: auto;
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 0;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            }
             .sidebar-brand { display: none; }
-            .main-wrapper { margin-right: 0; padding: 15px; margin-bottom: 70px; }
+            .sidebar-menu { flex-direction: row; justify-content: space-around; }
+            .main-wrapper { margin-right: 0; padding: 15px; width: 100%; margin-bottom: 75px; }
+            .nav-btn.active::before { width: 100%; height: 4px; bottom: 0; right: 0; top: auto; border-radius: 4px 4px 0 0; }
+            .top-bar { flex-direction: column; align-items: flex-start; }
+            .top-bar > div { width: 100%; flex-wrap: wrap; }
+            .excel-btn, .theme-toggle { flex: 1; justify-content: center; font-size: 13px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- الشريط الجانبي -->
     <div class="sidebar">
         <div class="sidebar-brand"><i class="fa-solid fa-store"></i></div>
         <div class="sidebar-menu">
-            <button class="nav-btn active" title="الرئيسية" onclick="showView('main-view', this)"><i class="fa-solid fa-house"></i></button>
-            <button class="nav-btn" title="إضافة زبون" onclick="showView('add-customer-view', this)"><i class="fa-solid fa-user-plus"></i></button>
-            <button class="nav-btn" title="الإحصائيات" onclick="showStats(this)"><i class="fa-solid fa-chart-pie"></i></button>
+            <button class="nav-btn active" id="btn-main" title="الرئيسية" onclick="showView('main-view', this)"><i class="fa-solid fa-house"></i></button>
+            <button class="nav-btn" id="btn-add" title="إضافة زبون" onclick="showView('add-customer-view', this)"><i class="fa-solid fa-user-plus"></i></button>
+            <button class="nav-btn" id="btn-stats" title="الإحصائيات" onclick="showStats(this)"><i class="fa-solid fa-chart-pie"></i></button>
         </div>
     </div>
 
+    <!-- المحتوى الرئيسي -->
     <div class="main-wrapper">
         <div class="top-bar">
             <h1>دفتر الشكك الإلكتروني</h1>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="excel-btn excel-btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> تحميل شيت Excel</button>
-                <button class="excel-btn" onclick="document.getElementById('excel-input').click()"><i class="fa-solid fa-file-import"></i> رفع Excel جديد</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="excel-btn excel-btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> تحميل Excel</button>
+                <button class="excel-btn" onclick="document.getElementById('excel-input').click()"><i class="fa-solid fa-file-import"></i> رفع Excel</button>
                 <input type="file" id="excel-input" class="hidden" accept=".xlsx, .xls" onchange="importFromExcel(event)">
                 <button class="theme-toggle" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
             </div>
@@ -132,21 +386,21 @@
                 <h2>إضافة زبون جديد</h2>
                 <div class="form-group">
                     <label>الاسم الرباعي:</label>
-                    <input type="text" id="cust-name" placeholder="اسم الزبون الكامل">
+                    <input type="text" id="cust-name" placeholder="أدخل اسم الزبون الكامل">
                 </div>
                 <div class="form-group">
                     <label>ملاحظات:</label>
-                    <textarea id="cust-notes" rows="3" placeholder="رقم الهاتف أو المكان..."></textarea>
+                    <textarea id="cust-notes" rows="3" placeholder="رقم الهاتف أو العنوان..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>قيمة الشكك الأولية:</label>
                     <input type="number" id="cust-initial-amount" value="0">
                 </div>
                 <div class="form-group">
-                    <label>البيان:</label>
-                    <input type="text" id="cust-initial-type" placeholder="نوع البضاعة...">
+                    <label>البيان / نوع البضاعة:</label>
+                    <input type="text" id="cust-initial-type" placeholder="مثال: حساب قديم، بضاعة...">
                 </div>
-                <button class="btn btn-primary" onclick="saveCustomer()"><i class="fa-solid fa-floppy-disk"></i> حفظ البيانات</button>
+                <button class="btn btn-primary" onclick="saveCustomer()"><i class="fa-solid fa-floppy-disk"></i> حفظ الزبون</button>
             </div>
         </div>
 
@@ -160,7 +414,7 @@
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-danger" onclick="deleteCurrentCustomer()"><i class="fa-solid fa-trash"></i> حذف</button>
-                        <button class="btn btn-secondary" onclick="showView('main-view')"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+                        <button class="btn btn-secondary" onclick="showView('main-view', document.getElementById('btn-main'))"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
                     </div>
                 </div>
 
@@ -169,17 +423,19 @@
                     <button class="btn btn-danger" onclick="addTransactionPrompt('تسديد')"><i class="fa-solid fa-minus"></i> تسديد مبلغ</button>
                 </div>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>المبلغ</th>
-                            <th>البيان</th>
-                            <th>التاريخ</th>
-                            <th>إجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactions-body"></tbody>
-                </table>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المبلغ</th>
+                                <th>البيان</th>
+                                <th>التاريخ</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-body"></tbody>
+                    </table>
+                </div>
 
                 <div class="total-banner">
                     <span>إجمالي المتبقي:</span>
@@ -188,7 +444,7 @@
             </div>
         </div>
 
-        <!-- الإحصائيات -->
+        <!-- صفحة الإحصائيات (المعادة بالكامل) -->
         <div id="stats-view" class="hidden">
             <div id="stats-content"></div>
         </div>
@@ -198,9 +454,9 @@
         let customers = [];
         let currentCustomerId = null;
 
-        // تحميل البيانات أولاً من LocalStorage، وإن لم توجد يُحمل من ملف data.json
+        // تحميل البيانات الأولية
         async function loadInitialData() {
-            const localData = localStorage.getItem('github_shokok_data');
+            const localData = localStorage.getItem('shokok_data_v2');
             if (localData) {
                 customers = JSON.parse(localData);
                 renderCustomers();
@@ -213,13 +469,13 @@
                         renderCustomers();
                     }
                 } catch (err) {
-                    console.log('لم يتم العثور على data.json أولي');
+                    renderCustomers();
                 }
             }
         }
 
         function saveLocal() {
-            localStorage.setItem('github_shokok_data', JSON.stringify(customers));
+            localStorage.setItem('shokok_data_v2', JSON.stringify(customers));
         }
 
         function toggleTheme() {
@@ -234,7 +490,20 @@
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(viewId).classList.remove('hidden');
+
+            if(btnElem) {
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                btnElem.classList.add('active');
+            }
+
             if (viewId === 'main-view') renderCustomers();
+        }
+
+        function getColorClass(amount) {
+            if (amount <= 100) return 'card-green';
+            if (amount <= 200) return 'card-blue';
+            if (amount <= 400) return 'card-yellow';
+            return 'card-red';
         }
 
         function renderCustomers() {
@@ -244,12 +513,17 @@
 
             const filtered = customers.filter(c => c.name && c.name.toLowerCase().includes(query));
 
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">لا يوجد زبائن مطايقين للبحث</div>`;
+                return;
+            }
+
             filtered.forEach(c => {
                 const total = (c.transactions || []).reduce((acc, t) => acc + t.amount, 0);
                 const card = document.createElement('div');
-                card.className = `customer-card card-blue`;
+                card.className = `customer-card ${getColorClass(total)}`;
                 card.onclick = () => openCustomerDetails(c.id);
-                card.innerHTML = `<h3>${c.name}</h3><div><b>${total}</b> جنيه</div>`;
+                card.innerHTML = `<h3>${c.name}</h3><div class="amount">${total} <span style="font-size:13px; font-weight:normal; color:var(--text-muted)">جنيه</span></div>`;
                 grid.appendChild(card);
             });
         }
@@ -260,7 +534,7 @@
             const amount = parseFloat(document.getElementById('cust-initial-amount').value) || 0;
             const type = document.getElementById('cust-initial-type').value || 'حساب أول الوقت';
 
-            if (!name) return alert('أدخل اسم الزبون');
+            if (!name) return alert('برجاء إدخال اسم الزبون');
 
             const newCust = {
                 id: Date.now(),
@@ -270,13 +544,18 @@
                     id: Date.now() + 1,
                     amount: amount,
                     type: type,
-                    date: new Date().toLocaleDateString('ar-EG')
+                    date: new Date().toLocaleDateString('ar-EG'),
+                    timestamp: Date.now()
                 }] : []
             };
 
             customers.push(newCust);
             saveLocal();
-            showView('main-view');
+            document.getElementById('cust-name').value = '';
+            document.getElementById('cust-notes').value = '';
+            document.getElementById('cust-initial-amount').value = '0';
+            document.getElementById('cust-initial-type').value = '';
+            showView('main-view', document.getElementById('btn-main'));
         }
 
         function openCustomerDetails(id) {
@@ -285,7 +564,7 @@
             if (!cust) return;
 
             document.getElementById('det-cust-name').innerText = cust.name;
-            document.getElementById('det-cust-notes').innerText = cust.notes || '';
+            document.getElementById('det-cust-notes').innerText = cust.notes || 'لا توجد ملاحظات';
 
             const tbody = document.getElementById('transactions-body');
             tbody.innerHTML = '';
@@ -294,11 +573,12 @@
             (cust.transactions || []).forEach(t => {
                 total += t.amount;
                 const row = document.createElement('tr');
+                const isPay = t.amount < 0;
                 row.innerHTML = `
-                    <td>${t.amount} جنيه</td>
+                    <td style="color: ${isPay ? 'var(--success)' : 'var(--danger)'}; font-weight:bold;">${t.amount > 0 ? '+' : ''}${t.amount} جنيه</td>
                     <td>${t.type}</td>
                     <td>${t.date}</td>
-                    <td><button class="btn btn-danger" onclick="deleteTransaction(${t.id})">حذف</button></td>
+                    <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteTransaction(${t.id})"><i class="fa-solid fa-trash"></i></button></td>
                 `;
                 tbody.appendChild(row);
             });
@@ -308,20 +588,21 @@
         }
 
         function addTransactionPrompt(mode) {
-            const amountStr = prompt(mode === 'شكك' ? 'أدخل المبلغ:' : 'أدخل المسدد:');
+            const amountStr = prompt(mode === 'شكك' ? 'أدخل قيمة الشكك:' : 'أدخل المبلغ المسدد:');
             if (!amountStr) return;
             let amount = parseFloat(amountStr);
-            if (isNaN(amount)) return;
+            if (isNaN(amount)) return alert('المبلغ غير صحيح');
 
             if (mode === 'تسديد') amount = -Math.abs(amount);
-            const type = prompt('البيان:', mode === 'تسديد' ? 'تسديد' : 'بضاعة');
+            const type = prompt('البيان / الملاحظة:', mode === 'تسديد' ? 'تسديد مبلغ' : 'شكك جديدة');
 
             const cust = customers.find(c => c.id == currentCustomerId);
             cust.transactions.push({
                 id: Date.now(),
                 amount: amount,
-                type: type,
-                date: new Date().toLocaleDateString('ar-EG')
+                type: type || (mode === 'تسديد' ? 'تسديد' : 'شكك'),
+                date: new Date().toLocaleDateString('ar-EG'),
+                timestamp: Date.now()
             });
 
             saveLocal();
@@ -329,6 +610,7 @@
         }
 
         function deleteTransaction(transId) {
+            if (!confirm('حذف هذه العملية؟')) return;
             const cust = customers.find(c => c.id == currentCustomerId);
             cust.transactions = cust.transactions.filter(t => t.id !== transId);
             saveLocal();
@@ -336,15 +618,55 @@
         }
 
         function deleteCurrentCustomer() {
-            if (confirm('حذف هذا الزبون؟')) {
-                customers = customers.filter(c => c.id != currentCustomerId);
-                saveLocal();
-                showView('main-view');
-            }
+            if (!confirm('هل أنت متأكد من حذف الزبون بكل حساباته؟')) return;
+            customers = customers.filter(c => c.id != currentCustomerId);
+            saveLocal();
+            showView('main-view', document.getElementById('btn-main'));
         }
 
         // ==========================================
-        // 📊 تصدير وإسترجاع ملفات EXCEL
+        // 📊 صفحة الإحصائيات الشاملة (المعادة)
+        // ==========================================
+        function showStats(btnElem = null) {
+            showView('stats-view', btnElem);
+            const container = document.getElementById('stats-content');
+            let totalAll = 0;
+            
+            const groups = { upTo100: [], upTo200: [], upTo400: [], over500: [] };
+
+            customers.forEach(c => {
+                const sum = (c.transactions || []).reduce((acc, t) => acc + t.amount, 0);
+                totalAll += sum;
+
+                if (sum <= 100 && sum > 0) groups.upTo100.push(c.name);
+                else if (sum <= 200 && sum > 0) groups.upTo200.push(c.name);
+                else if (sum <= 400 && sum > 0) groups.upTo400.push(c.name);
+                else if (sum > 400) groups.over500.push(c.name);
+            });
+
+            const renderTags = (arr) => arr.length ? arr.map(n => `<span class="tag">${n}</span>`).join('') : '<small style="color:var(--text-muted)">لا يوجد</small>';
+
+            container.innerHTML = `
+                <div class="card-box">
+                    <h2>إحصائيات الشكك الشاملة</h2>
+                    <div class="total-banner" style="margin-bottom: 25px;">
+                        <span>إجمالي ديون المحل الكلية:</span>
+                        <span>${totalAll} جنيه</span>
+                    </div>
+
+                    <div class="stats-section">
+                        <h4><i class="fa-solid fa-users"></i> توزيع الزبائن حسب الشرائح المالية:</h4>
+                        <p><strong>حتى 100 جنيه (${groups.upTo100.length}):</strong><br>${renderTags(groups.upTo100)}</p>
+                        <p><strong>حتى 200 جنيه (${groups.upTo200.length}):</strong><br>${renderTags(groups.upTo200)}</p>
+                        <p><strong>حتى 400 جنيه (${groups.upTo400.length}):</strong><br>${renderTags(groups.upTo400)}</p>
+                        <p><strong>أكثر من 400 جنيه (${groups.over500.length}):</strong><br>${renderTags(groups.over500)}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // 📊 تصدير وإسترجاع EXCEL
         // ==========================================
         function exportToExcel() {
             const excelData = [];
@@ -410,7 +732,7 @@
                 customers = Object.values(restored);
                 saveLocal();
                 renderCustomers();
-                alert('تم تحميل بيانات Excel بنجاح!');
+                alert('تم استيراد ملف Excel بنجاح!');
             };
             reader.readAsArrayBuffer(file);
         }

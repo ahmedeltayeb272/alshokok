@@ -10,7 +10,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- أيقونات FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <!-- مكتبات Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --bg-body: #f8fafc;
@@ -323,24 +326,51 @@
         let activeTransactionType = 'شكك';
         let matchedExistingCustId = null;
 
-        function loadData() {
-            const localData = localStorage.getItem('shokok_app_db');
-            if (localData) {
-                customers = JSON.parse(localData);
-            }
-            renderCustomers();
-        }
+        // 1. تهيئة Firebase بمفاتيح مشروعك الخاصة
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_SV3RKrzR2rD1ekx4ExBoenVwffa2D8k",
+            authDomain: "alshokok-app.firebaseapp.com",
+            databaseURL: "https://alshokok-app-default-rtdb.firebaseio.com",
+            projectId: "alshokok-app",
+            storageBucket: "alshokok-app.firebasestorage.app",
+            messagingSenderId: "1041281465655",
+            appId: "1:1041281465655:web:4402f3a0819b56910eaeb2"
+        };
 
-// ضبط وضع الدارك مود ليكون الوضع الافتراضي دائماً عند فتح الموقع
+        // 2. الاتصال بقاعدة البيانات
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const customersRef = db.ref('customers');
+
+        // 3. تحميل البيانات والمزامنة اللحظية مع وضع الدارك مود الافتراضي
+        function loadData() {
+            // ضبط الدارك مود ليكون الوضع الافتراضي عند فتح الموقع
             document.documentElement.setAttribute('data-theme', 'dark');
             const themeIcon = document.getElementById('theme-icon');
-            if (themeIcon) {
-                themeIcon.className = 'fa-solid fa-sun';
-            }
-        
-        function saveData() {
-            localStorage.setItem('shokok_app_db', JSON.stringify(customers));
+            if (themeIcon) themeIcon.className = 'fa-solid fa-sun';
+
+            // المزامنة اللحظية من Firebase
+            customersRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    customers = Array.isArray(data) ? data : Object.values(data);
+                } else {
+                    customers = [];
+                }
+                renderCustomers();
+                
+                // تحديث التفاصيل فوراً لو الموبايل/الكمبيوتر فاتح كارت زبون معين
+                if (currentCustomerId && !document.getElementById('customer-details-view').classList.contains('hidden')) {
+                    openCustomerDetails(currentCustomerId);
+                }
+            });
         }
+
+        // 4. حفظ البيانات سحابياً
+        function saveData() {
+            customersRef.set(customers);
+        }
+
 
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');

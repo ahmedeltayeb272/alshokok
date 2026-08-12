@@ -329,6 +329,15 @@
                 customers = JSON.parse(localData);
             }
             renderCustomers();
+
+            // ضبط وضع الدارك مود ليكون الوضع الافتراضي دائماً عند فتح الموقع
+            document.documentElement.setAttribute('data-theme', 'dark');
+            const themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) {
+                themeIcon.className = 'fa-solid fa-sun';
+            }
+        }
+
         }
 
         function saveData() {
